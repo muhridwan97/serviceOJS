@@ -54,7 +54,7 @@
             return $data;
         }
         public function getUserFiles($userId){
-            $sql = "select sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id where u.user_id='$userId' and file_stage=2 and sfs.setting_name='name' and gs.locale='en_US'";
+            $sql = "select sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id where u.user_id='$userId' and file_stage=2 and sfs.setting_name='name' and gs.locale='en_US'";
 
             $stmt = $this->core->dbh->prepare($sql);
             
