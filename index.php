@@ -21,7 +21,7 @@ $app->get('/api/pengguna', function ($request,$response) {
     );
     return $response->withJson($data);
 });
-$app->get('/forum/{title}', function ($request,$response,$args) {
+$app->post('/forum', function ($request,$response,$args) {
 
     return $args['title'];
 });
@@ -32,5 +32,11 @@ $app->GET('/api/userSubmitAntrian', controller\userController::class. ':getUserS
 $app->GET('/api/submission', controller\userController::class. ':getDaftarSubmission');
 $app->GET('/api/userFiles/{userId}', controller\userController::class. ':getUserFiles');
 $app->GET('/api/lihatFilesAsli/{fileId}', controller\fileController::class. ':getFilesAsli');
+$app->GET('/api/submitIn/{data}', controller\userController::class. ':setSubmitIn');
+
+$app->group('/api/antrian', function () use ($app) {
+    $app->post('/submitIn', controller\userController::class. ':setSubmitIn');
+    $app->get('/sudah-selesai/{nim}', controller\PelanggaranController::class. ':sudahSelesai');
+});
 $app->run();
 ?>

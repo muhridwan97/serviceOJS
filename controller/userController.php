@@ -31,6 +31,14 @@ class userController{
         $dataUserFiles = $userFiles->getUserFiles($userId);
         return $response->withJson($dataUserFiles);
     }
+    public function setSubmitIn($request, $response, $args) {
+        $data = $request->getParsedBody();
+        print_r($data);
+        //return $response->withJson($data);
+        $userFiles = new \model\userModel();
+        $dataUserFiles = $userFiles->setSubmitIn($data);
+        //return $response->withJson($dataUserFiles);
+    }
 }
 
 
