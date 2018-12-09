@@ -22,8 +22,20 @@
         }
 
         public function getUserSubmitAntrian(){
-            $sql = "select DISTINCT u.user_id, sf.submission_id, first_name,middle_name,last_name from users u left join submission_files sf on user_id=uploader_user_id join stage_assignments sa on sf.submission_id=sa.submission_id where sf.file_stage = 2 and sa.submission_id not in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 ) and sa.user_group_id=26";
+            $sql = "select DISTINCT u.user_id, sf.submission_id, first_name,middle_name,last_name from users u left join submission_files sf on user_id=uploader_user_id join stage_assignments sa on sf.submission_id=sa.submission_id 
+            join submissions s on s.submission_id=sf.submission_id where sf.file_stage = 2 and sa.submission_id not in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 ) and sa.user_group_id=26 ORDER BY s.date_submitted ASC";
 
+            $stmt = $this->core->dbh->prepare($sql);
+            
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+ 
+            return $data;
+        }
+        public function getUserSubmitAntrianRevisi(){
+            $sql = "select DISTINCT u.user_id, sf.submission_id, first_name,middle_name,last_name from users u left join submission_files sf on user_id=uploader_user_id join stage_assignments sa on sf.submission_id=sa.submission_id 
+            join submissions s on s.submission_id=sf.submission_id where sf.file_stage = 2 and sa.submission_id not in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 ) and sa.user_group_id=26 ORDER BY s.date_submitted ASC";
+            //SELECT DISTINCT submission_id, uploader_user_id FROM `submission_files` GROUP by submission_id
             $stmt = $this->core->dbh->prepare($sql);
             
             $stmt->execute();
@@ -33,7 +45,7 @@
         }
 
         public function getUserSubmit(){
-            $sql = "select DISTINCT u.user_id, first_name,middle_name,last_name from users u left join submission_files sf on user_id=uploader_user_id join stage_assignments sa on sf.submission_id=sa.submission_id where sf.file_stage = 2 and sa.submission_id in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 )";
+            $sql = "select DISTINCT u.user_id, first_name,middle_name,last_name from users u left join submission_files sf on user_id=uploader_user_id join stage_assignments sa on sf.submission_id=sa.submission_id join submissions s on s.submission_id=sf.submission_id  where sf.file_stage = 2 and sa.submission_id in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 ) and s.status=1";
 
             $stmt = $this->core->dbh->prepare($sql);
             
@@ -66,10 +78,10 @@
             return $data;
         }
         public function setSubmitIn($data){
-            print_r($data);
+            
             $sql = "insert into stage_assignments (submission_id, user_group_id, user_id, date_assigned, recommend_only)VALUES 
-            ($data[submission_id],$data[user_group_id],$data[user_id],$data[date_assigned],0)";
-
+            ($data[submission_id],$data[user_group_id],$data[user_id],'$data[date_assigned]',0)";
+            //print_r($sql);
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
         }
