@@ -45,7 +45,7 @@
         }
 
         public function getUserSubmit(){
-            $sql = "select DISTINCT u.user_id, first_name,middle_name,last_name from users u left join submission_files sf on user_id=uploader_user_id join stage_assignments sa on sf.submission_id=sa.submission_id join submissions s on s.submission_id=sf.submission_id  where sf.file_stage = 2 and sa.submission_id in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 ) and s.status=1";
+            $sql = "select DISTINCT u.user_id, first_name,middle_name,last_name,s.stage_id from users u left join submission_files sf on user_id=uploader_user_id join stage_assignments sa on sf.submission_id=sa.submission_id join submissions s on s.submission_id=sf.submission_id  where sf.file_stage = 2 and sa.submission_id in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 ) and s.status=1";
 
             $stmt = $this->core->dbh->prepare($sql);
             
@@ -84,6 +84,30 @@
             //print_r($sql);
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
+        }
+        public function setVerifikasi($data){
+            
+            $sql = "UPDATE submissions s, submission_files sf
+            SET s.stage_id=3
+            WHERE s.submission_id=sf.submission_id
+             AND sf.uploader_user_id =$data[user_id];";
+            //print_r($sql);
+            //$stmt = $this->core->dbh->prepare($sql);
+            //$stmt->execute();
+            $sql2="select * from submission_files where submission_id=5 and file_stage=2";
+            $stmt = $this->core->dbh->prepare($sql2);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            foreach($data as $d){
+                $sql3="INSERT INTO submission_files ( revision, source_file_id, source_revision, submission_id, file_type, genre_id,
+                 file_size, original_file_name, file_stage, direct_sales_price, sales_type, viewable, date_uploaded, date_modified, uploader_user_id, 
+                 assoc_type, assoc_id) VALUES ( $d->revision, $d->file_id, 1, $d->submission_id, '$d->file_type', $d->genre_id, $d->file_size, '$d->original_file_name', 4, NULL, NULL, 1,
+                 '$d->date_uploaded', '$d->date_modified', $d->uploader_user_id, NULL, NULL);";
+                 $stmt = $this->core->dbh->prepare($sql3);
+                 $stmt->execute();
+                //print_r($sql3);
+            }
+            //print_r($data[0]);
         }
         
     }
