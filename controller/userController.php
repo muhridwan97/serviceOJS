@@ -47,6 +47,14 @@ class userController{
         $dataUserFiles = $userFiles->setVerifikasi($data);
         //return $response->withJson($dataUserFiles);
     }
+    public function getMetadata($request, $response, $args) {
+        $userId = $args['userId']; 
+        $userMetadata = new \model\userModel();
+        $submission_id=$userMetadata->getSubmissionId($userId);
+        print_r($submission_id);
+        //$dataUserMetadata = $userMetadata->getMetadata($submission_id);
+        //return $response->withJson($dataUserFiles);
+    }
 }
 
 
