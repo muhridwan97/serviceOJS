@@ -28,7 +28,9 @@ class userController{
     public function getUserFiles($request, $response, $args) {
         $userId = $args['userId']; 
         $userFiles = new \model\userModel();
-        $dataUserFiles = $userFiles->getUserFiles($userId);
+        $submission_id=$userFiles->getSubmissionId($userId);
+        //print_r($submission_id);
+        $dataUserFiles = $userFiles->getUserFiles($submission_id);
         return $response->withJson($dataUserFiles);
     }
     public function setSubmitIn($request, $response, $args) {
@@ -51,8 +53,16 @@ class userController{
         $userId = $args['userId']; 
         $userMetadata = new \model\userModel();
         $submission_id=$userMetadata->getSubmissionId($userId);
-        print_r($submission_id);
-        //$dataUserMetadata = $userMetadata->getMetadata($submission_id);
+        
+        $dataUserMetadata = $userMetadata->getMetadata($submission_id);
+        return $response->withJson($dataUserMetadata);
+    }
+    public function setMetadata($request, $response, $args) {
+        $data = $request->getParsedBody();
+        //print_r($data);
+        //return $response->withJson($data);
+        $userFiles = new \model\userModel();
+        $dataUserFiles = $userFiles->setMetadata($data);
         //return $response->withJson($dataUserFiles);
     }
 }

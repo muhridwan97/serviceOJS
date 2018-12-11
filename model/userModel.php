@@ -22,8 +22,7 @@
         }
 
         public function getUserSubmitAntrian(){
-            $sql = "select DISTINCT u.user_id, sf.submission_id, first_name,middle_name,last_name from users u left join submission_files sf on user_id=uploader_user_id join stage_assignments sa on sf.submission_id=sa.submission_id 
-            join submissions s on s.submission_id=sf.submission_id where sf.file_stage = 2 and sa.submission_id not in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 ) and sa.user_group_id=26 ORDER BY s.date_submitted ASC";
+            $sql = "select u.user_id, sf.submission_id, first_name,middle_name,last_name, s.date_submitted from users u left join submission_files sf on user_id=uploader_user_id left join stage_assignments sa on sf.submission_id=sa.submission_id left join submissions s on s.submission_id=sf.submission_id where sf.file_stage = 2 and sa.submission_id not in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20) and s.submission_progress!=3 GROUP BY (u.user_id) ORDER BY s.date_submitted ASC";
 
             $stmt = $this->core->dbh->prepare($sql);
             
@@ -65,8 +64,9 @@
  
             return $data;
         }
-        public function getUserFiles($userId){
-            $sql = "select sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id where u.user_id='$userId' and file_stage=2 and sfs.setting_name='name' and gs.locale='en_US'";
+        public function getUserFiles($submission_id){
+            $sql = "select sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file,ss.setting_value as judul,
+            (SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='subtitle') as subtitle, (SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract') as abstract from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id join submission_settings ss on ss.submission_id=sf.submission_id where sf.submission_id=$submission_id and file_stage=2 and sfs.setting_name='name' and gs.locale='en_US' and ss.setting_name='cleanTitle'";
 
             $stmt = $this->core->dbh->prepare($sql);
             
@@ -152,6 +152,28 @@
                 }
             }
             return $submission_id;
+        }
+        public function getMetadata($submission_id){
+            $sql = "SELECT submission_id,first_name,middle_name,last_name,email,seq FROM `authors` WHERE submission_id=$submission_id";
+
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            
+            return $data;
+        }
+        public function setMetadata($data){
+            $submission_id=$data['submission_id'];
+            $judul= $data['judul'];
+            $subtitle=$data['subtitle'];
+            $abstract="<p>".$data['abstract']."</p>";
+            $sql = "UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='Title';
+            UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='cleanTitle';
+            UPDATE submission_settings SET setting_value='$subtitle'  WHERE submission_id=$submission_id and setting_name='subtitle';
+            UPDATE submission_settings SET setting_value='$abstract'  WHERE submission_id=$submission_id and setting_name='abstract';";
+            //print_r($sql);
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
         }
         
     }
