@@ -65,6 +65,11 @@ class userController{
         $dataUserFiles = $userFiles->setMetadata($data);
         //return $response->withJson($dataUserFiles);
     }
+    public function getDaftarPublication($request, $response, $args) {
+        $user = new \model\userModel();
+        $dataUser = $user->getDaftarPublication();
+        return $response->withJson($dataUser);;
+    }
 }
 
 

@@ -175,6 +175,16 @@
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
         }
-        
+        public function getDaftarPublication(){
+            $sql = "select DISTINCT u.user_id, first_name,middle_name,last_name,s.stage_id from users u left join submission_files sf on user_id=uploader_user_id 
+            join stage_assignments sa on sf.submission_id=sa.submission_id join submissions s on s.submission_id=sf.submission_id  where sf.file_stage = 2 and sa.submission_id in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 ) and s.status=3";
+
+            $stmt = $this->core->dbh->prepare($sql);
+            
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+ 
+            return $data;
+        }
     }
 ?>

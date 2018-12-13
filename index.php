@@ -41,5 +41,6 @@ $app->group('/api/antrian', function () use ($app) {
 $app->post('/api/verifikasi', controller\userController::class. ':setVerifikasi');
 $app->get('/api/metadata/{userId}', controller\userController::class. ':getMetadata');
 $app->post('/api/setMetadata', controller\userController::class. ':setMetadata');
+$app->GET('/api/publication', controller\userController::class. ':getDaftarPublication');
 $app->run();
 ?>
