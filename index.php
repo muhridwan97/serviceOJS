@@ -42,5 +42,7 @@ $app->post('/api/verifikasi', controller\userController::class. ':setVerifikasi'
 $app->get('/api/metadata/{userId}', controller\userController::class. ':getMetadata');
 $app->post('/api/setMetadata', controller\userController::class. ':setMetadata');
 $app->GET('/api/publication', controller\userController::class. ':getDaftarPublication');
+$app->GET('/api/publicationIssue', controller\userController::class. ':getPublicationIssue');
+$app->GET('/api/publicationMaterial/{id}', controller\userController::class. ':getPublicationMaterial');
 $app->run();
 ?>

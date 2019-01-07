@@ -186,5 +186,26 @@
  
             return $data;
         }
+        
+        public function getPublicationIssue(){
+            $sql = "SELECT i.issue_id,i.volume,i.number,i.year,i.published,i.current,iss.setting_value FROM issues i join issue_settings iss on i.issue_id=iss.issue_id WHERE iss.setting_name='title'";
+
+            $stmt = $this->core->dbh->prepare($sql);
+            
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+ 
+            return $data;
+        }
+        public function getPublicationMaterial($id){
+            $sql = "SELECT i.issue_id,i.volume,i.number,i.year,i.published,i.current,iss.setting_value FROM issues i join issue_settings iss on i.issue_id=iss.issue_id WHERE iss.setting_name='title'";
+
+            $stmt = $this->core->dbh->prepare($sql);
+            
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+ 
+            return $data;
+        }
     }
 ?>

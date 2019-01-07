@@ -70,6 +70,18 @@ class userController{
         $dataUser = $user->getDaftarPublication();
         return $response->withJson($dataUser);;
     }
+    
+    public function getPublicationIssue($request, $response, $args) {
+        $user = new \model\userModel();
+        $dataUser = $user->getPublicationIssue();
+        return $response->withJson($dataUser);;
+    }
+    public function getPublicationMaterial($request, $response, $args) {
+        $id = $args['id']; 
+        $user = new \model\userModel();
+        $dataUser = $user->getPublicationMaterial($id);
+        return $response->withJson($dataUser);;
+    }
 }
 
 
