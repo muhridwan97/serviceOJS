@@ -4,6 +4,7 @@ namespace controller;
 
 class fileController{
 
+    
     public function getFilesAsli($request, $response, $args) {
         $fileId = $args['fileId']; 
         $userFiles = new \model\fileModel();
@@ -32,6 +33,36 @@ class fileController{
         $data = array('alamat' => $path);
         return $response->withJson($data);
     }
+    
+    public function uploadArsip($request, $response, $args) {
+        $directory = __DIR__ . '/uploads';
+
+    $uploadedFiles = $request->getUploadedFiles();
+
+    // handle single input with single file upload
+    $uploadedFile = $uploadedFiles['fileArsip'];
+    print_r($uploadedFiles);
+    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+        //$filename = $this->moveUploadedFile($directory, $uploadedFile);
+        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+        $basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
+        $filename = sprintf('%s.%0.8s', $basename, $extension);
+
+        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+        return $response->write('uploaded ' . $filename . '<br/>');
+    }
+    }
+
+//     public function moveUploadedFile($directory, UploadedFile $uploadedFile)
+// {
+//     $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+//     $basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
+//     $filename = sprintf('%s.%0.8s', $basename, $extension);
+
+//     $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+//     return $filename;
+// }
 }
 
 

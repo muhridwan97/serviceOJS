@@ -13,7 +13,37 @@ defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV
 require 'vendor/autoload.php';
 require 'configs/'.strtolower(APPLICATION_ENV).'.config.php';
 
+
+use Slim\Http\UploadedFile;
+
 $app = new \Slim\App;
+//untuk upload
+// $container = $app->getContainer();
+// $container['upload_directory'] = __DIR__ . '/uploads';
+
+$app->post('/api/uploadArsip', function(Request $request, Response $response) {
+    $directory = 'C:\xampp\htdocs\jurnal\dataJurnal\journals\2\articles';
+    
+    $uploadedFiles = $request->getUploadedFiles();
+    
+    // handle single input with single file upload
+    $uploadedFile = $uploadedFiles['fileArsip'];
+    $basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
+    //print_r($basename);
+    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+        
+        $filename = sprintf('%s.%0.8s', $basename, $extension);
+
+        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+        $response->write('uploaded ' . $filename . '<br/>');
+    }
+
+});
+
+// $app->post('/api/uploadArsip', controller\fileController::class. ':uploadArsip');
+
+
 $app->get('/api/pengguna', function ($request,$response) {
     $data = array(
         'nama' => 'Ridwan',
