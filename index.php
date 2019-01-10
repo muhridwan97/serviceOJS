@@ -22,8 +22,9 @@ $app = new \Slim\App;
 // $container['upload_directory'] = __DIR__ . '/uploads';
 
 $app->post('/api/uploadArsip', function(Request $request, Response $response) {
+   
     $directory = 'C:\xampp\htdocs\jurnal\dataJurnal\journals\2\articles';
-    
+    mkdir("hallo\hai",0777,true);
     $uploadedFiles = $request->getUploadedFiles();
     
     // handle single input with single file upload
@@ -71,6 +72,7 @@ $app->group('/api/antrian', function () use ($app) {
 $app->post('/api/verifikasi', controller\userController::class. ':setVerifikasi');
 $app->get('/api/metadata/{userId}', controller\userController::class. ':getMetadata');
 $app->post('/api/setMetadata', controller\userController::class. ':setMetadata');
+$app->post('/api/tambahPenulis', controller\userController::class. ':tambahPenulis');
 $app->GET('/api/publication', controller\userController::class. ':getDaftarPublication');
 $app->GET('/api/publicationIssue', controller\userController::class. ':getPublicationIssue');
 $app->GET('/api/publicationMaterial/{id}', controller\userController::class. ':getPublicationMaterial');

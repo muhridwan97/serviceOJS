@@ -175,6 +175,32 @@
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
         }
+        public function tambahPenulis($data){
+            $submission_id=$data['submission_id'];
+            $first_name=$data['first_name'];
+            $last_name= $data['last_name'];
+            $middle_name=$data['middle_name'];
+            $email=$data['email'];
+            $affiliation=$data['affiliation'];
+            $sql0="SELECT seq FROM authors where submission_id=$submission_id ORDER BY seq DESC;";
+            $stmt = $this->core->dbh->prepare($sql0);
+            $stmt->execute();
+            $seq = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $seq = $seq[0]->seq;
+            $seq++;
+            $sql = "INSERT INTO authors( submission_id, primary_contact, seq, first_name, middle_name, last_name, suffix, country, email,url, user_group_id, include_in_browse) 
+            VALUES ($submission_id,0,$seq,'$first_name','$middle_name','$last_name','','ID','$email','',31,1);";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            $sql2="SELECT author_id FROM authors where submission_id=$submission_id and seq=$seq;";
+            $stmt = $this->core->dbh->prepare($sql2);
+            $stmt->execute();
+            $author_id = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $author_id = $author_id[0]->author_id;
+            $sql3="INSERT INTO author_settings(author_id, locale, setting_name, setting_value, setting_type) VALUES ($author_id,'en_US','affiliation','$affiliation','string');";
+            $stmt = $this->core->dbh->prepare($sql3);
+            $stmt->execute();
+        }
         public function getDaftarPublication(){
             $sql = "select DISTINCT u.user_id, first_name,middle_name,last_name,s.stage_id from users u left join submission_files sf on user_id=uploader_user_id 
             join stage_assignments sa on sf.submission_id=sa.submission_id join submissions s on s.submission_id=sf.submission_id  where sf.file_stage = 2 and sa.submission_id in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20 ) and s.status=3";

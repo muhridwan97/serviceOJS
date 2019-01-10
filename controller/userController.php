@@ -65,6 +65,14 @@ class userController{
         $dataUserFiles = $userFiles->setMetadata($data);
         //return $response->withJson($dataUserFiles);
     }
+    public function tambahPenulis($request, $response, $args) {
+        $data = $request->getParsedBody();
+        //print_r($data);
+        //return $response->withJson($data);
+        $userFiles = new \model\userModel();
+        $dataUserFiles = $userFiles->tambahPenulis($data);
+        //return $response->withJson($dataUserFiles);
+    }
     public function getDaftarPublication($request, $response, $args) {
         $user = new \model\userModel();
         $dataUser = $user->getDaftarPublication();
