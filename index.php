@@ -24,7 +24,7 @@ $app = new \Slim\App;
 $app->post('/api/uploadArsip', function(Request $request, Response $response) {
    
     $directory = 'C:\xampp\htdocs\jurnal\dataJurnal\journals\2\articles';
-    mkdir("hallo\hai",0777,true);
+    //mkdir("hallo\hai",0777,true);
     $uploadedFiles = $request->getUploadedFiles();
     
     // handle single input with single file upload
