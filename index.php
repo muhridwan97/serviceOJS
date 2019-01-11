@@ -30,7 +30,8 @@ $app->post('/api/uploadArsip', function(Request $request, Response $response) {
     // handle single input with single file upload
     $uploadedFile = $uploadedFiles['fileArsip'];
     $basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
-    //print_r($basename);
+    //print_r($uploadedFile);
+    
     if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
         
@@ -39,7 +40,7 @@ $app->post('/api/uploadArsip', function(Request $request, Response $response) {
         $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
         $response->write('uploaded ' . $filename . '<br/>');
     }
-
+    $response->write('gagal <br/>');
 });
 
 // $app->post('/api/uploadArsip', controller\fileController::class. ':uploadArsip');
