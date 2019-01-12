@@ -80,5 +80,6 @@ $app->GET('/api/publication', controller\userController::class. ':getDaftarPubli
 $app->GET('/api/publicationIssue', controller\userController::class. ':getPublicationIssue');
 $app->GET('/api/publicationMaterial/{id}', controller\userController::class. ':getPublicationMaterial');
 $app->GET('/api/getEmail/{userId}', controller\userController::class. ':getEmail');
+$app->post('/api/decline', controller\userController::class. ':decline');
 $app->run();
 ?>

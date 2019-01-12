@@ -65,6 +65,14 @@ class userController{
         $dataUserFiles = $userFiles->setMetadata($data);
         //return $response->withJson($dataUserFiles);
     }
+    public function decline($request, $response, $args) {
+        $data = $request->getParsedBody();
+        //print_r($data);
+        //return $response->withJson($data);
+        $userFiles = new \model\userModel();
+        $dataUserFiles = $userFiles->decline($data);
+        //return $response->withJson($dataUserFiles);
+    }
     public function tambahPenulis($request, $response, $args) {
         $data = $request->getParsedBody();
         //print_r($data);

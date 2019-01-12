@@ -175,6 +175,14 @@
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
         }
+        public function decline($data){
+            $submission_id=$data['user_id'];
+            $submission_id=$this->getSubmissionId($submission_id);
+            $sql = "UPDATE submissions SET status = '4' WHERE submission_id = '$submission_id';";
+            //print_r($sql);
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+        }
         public function tambahPenulis($data){
             $submission_id=$data['submission_id'];
             $first_name=$data['first_name'];
