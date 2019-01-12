@@ -90,6 +90,14 @@ class userController{
         $dataUser = $user->getPublicationMaterial($id);
         return $response->withJson($dataUser);;
     }
+    public function getEmail($request, $response, $args) {
+        $userId = $args['userId']; 
+        $userEmail = new \model\userModel();
+        $submission_id=$userEmail->getSubmissionId($userId);
+        
+        $dataUserEmail = $userEmail->getEmail($submission_id);
+        return $response->withJson($dataUserEmail);
+    }
 }
 
 

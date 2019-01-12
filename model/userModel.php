@@ -233,5 +233,14 @@
  
             return $data;
         }
+        public function getEmail($submission_id){
+            $sql = "SELECT submission_id,primary_contact,email,seq FROM `authors` WHERE submission_id=$submission_id";
+
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            
+            return $data;
+        }
     }
 ?>
