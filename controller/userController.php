@@ -57,6 +57,22 @@ class userController{
         $dataUserMetadata = $userMetadata->getMetadata($submission_id);
         return $response->withJson($dataUserMetadata);
     }
+    public function getKeyword($request, $response, $args) {
+        $userId = $args['userId']; 
+        $userMetadata = new \model\userModel();
+        $submission_id=$userMetadata->getSubmissionId($userId);
+        
+        $dataUserMetadata = $userMetadata->getKeyword($submission_id);
+        return $response->withJson($dataUserMetadata);
+        
+    }
+    public function getPage($request, $response, $args) {
+        $issueId = $args['issueId']; 
+        $userMetadata = new \model\userModel();        
+        $data = $userMetadata->getPage($issueId);
+        return $response->withJson($data);
+        
+    }
     public function setMetadata($request, $response, $args) {
         $data = $request->getParsedBody();
         //print_r($data);

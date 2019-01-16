@@ -74,11 +74,13 @@ $app->group('/api/antrian', function () use ($app) {
 
 $app->post('/api/verifikasi', controller\userController::class. ':setVerifikasi');
 $app->get('/api/metadata/{userId}', controller\userController::class. ':getMetadata');
+$app->get('/api/keyword/{userId}', controller\userController::class. ':getKeyword');
 $app->post('/api/setMetadata', controller\userController::class. ':setMetadata');
 $app->post('/api/tambahPenulis', controller\userController::class. ':tambahPenulis');
 $app->GET('/api/publication', controller\userController::class. ':getDaftarPublication');
 $app->GET('/api/publicationIssue', controller\userController::class. ':getPublicationIssue');
 $app->GET('/api/publicationMaterial/{id}', controller\userController::class. ':getPublicationMaterial');
+$app->get('/api/getPage/{issueId}', controller\userController::class. ':getPage');
 $app->GET('/api/getEmail/{userId}', controller\userController::class. ':getEmail');
 $app->post('/api/decline', controller\userController::class. ':decline');
 $app->run();

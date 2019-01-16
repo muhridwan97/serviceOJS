@@ -22,7 +22,7 @@
         }
 
         public function getUserSubmitAntrian(){
-            $sql = "select u.user_id, sf.submission_id, first_name,middle_name,last_name, s.date_submitted from users u left join submission_files sf on user_id=uploader_user_id left join stage_assignments sa on sf.submission_id=sa.submission_id left join submissions s on s.submission_id=sf.submission_id where sf.file_stage = 2 and sa.submission_id not in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20) and s.submission_progress!=3 GROUP BY (u.user_id) ORDER BY s.date_submitted ASC";
+            $sql = "select u.user_id, sf.submission_id, first_name,middle_name,last_name, s.date_submitted from users u left join submission_files sf on user_id=uploader_user_id left join stage_assignments sa on sf.submission_id=sa.submission_id left join submissions s on s.submission_id=sf.submission_id where sf.file_stage = 2 and sa.submission_id not in ( SELECT sa.submission_id FROM stage_assignments sa WHERE sa.user_group_id=20) and s.submission_progress!=3 and s.status=1 GROUP BY (u.user_id) ORDER BY s.date_submitted ASC";
 
             $stmt = $this->core->dbh->prepare($sql);
             
@@ -51,6 +51,22 @@
             $stmt->execute();
             $data = $stmt->fetchAll(PDO::FETCH_OBJ);
  
+            return $data;
+        }
+
+        public function getPage($issueId){
+            $sql = "SELECT submission_id FROM published_submissions WHERE issue_id=$issueId ORDER by published_submission_id ASC";
+            $stmt = $this->core->dbh->prepare($sql);            
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $submission_id=0;
+            foreach($data as $d){
+                $submission_id=$d->submission_id;
+            }
+            $sql2 = "SELECT pages FROM submissions WHERE submission_id=$submission_id";
+            $stmt = $this->core->dbh->prepare($sql2);            
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
             return $data;
         }
 
@@ -162,11 +178,37 @@
             
             return $data;
         }
+        public function getKeyword($submission_id){
+            $sql = "SELECT controlled_vocab_id FROM controlled_vocabs where assoc_id=$submission_id AND symbolic='submissionKeyword';";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $id=0;
+            foreach($data as $d){
+                    $id=$d->controlled_vocab_id;
+            }
+            $sql2 = "SELECT es.setting_value FROM controlled_vocab_entry_settings es JOIN controlled_vocab_entries ve 
+            on es.controlled_vocab_entry_id=ve.controlled_vocab_entry_id WHERE ve.controlled_vocab_id = $id;";
+            $stmt = $this->core->dbh->prepare($sql2);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $keyword=array();
+            $i=0;
+            foreach($data as $d){
+                    $keyword[$i]=$d->setting_value;
+                    $i++;
+            }
+            $kalimat = implode(",",$keyword);
+            $d->setting_value=$kalimat;
+            return $data;
+        }
         public function setMetadata($data){
             $submission_id=$data['submission_id'];
             $judul= $data['judul'];
             $subtitle=$data['subtitle'];
             $abstract="<p>".$data['abstract']."</p>";
+            $keyword=$data['keyword'];
+            $keyword=explode(",",$keyword);
             $sql = "UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='Title';
             UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='cleanTitle';
             UPDATE submission_settings SET setting_value='$subtitle'  WHERE submission_id=$submission_id and setting_name='subtitle';
@@ -174,6 +216,41 @@
             //print_r($sql);
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
+            $sql2 = "SELECT controlled_vocab_id FROM controlled_vocabs where assoc_id=$submission_id AND symbolic='submissionKeyword';";
+            //print_r($sql);
+            $stmt = $this->core->dbh->prepare($sql2);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $id=0;
+            foreach($data as $d){
+                    $id=$d->controlled_vocab_id;
+            }
+            //print_r($keyword);//
+            $sql3 = "DELETE controlled_vocab_entries, controlled_vocab_entry_settings FROM controlled_vocab_entries
+            INNER JOIN controlled_vocab_entry_settings ON controlled_vocab_entries.controlled_vocab_entry_id = controlled_vocab_entry_settings.controlled_vocab_entry_id 
+            WHERE
+            controlled_vocab_entries.controlled_vocab_id= $id;
+            ALTER TABLE controlled_vocab_entries AUTO_INCREMENT=0;";
+            $stmt = $this->core->dbh->prepare($sql3);
+            $stmt->execute();
+            for($i=1;$i<=count($keyword);$i++){
+                $sql4 = "INSERT INTO controlled_vocab_entries (controlled_vocab_id, seq) VALUES ($id,$i);";
+                $stmt = $this->core->dbh->prepare($sql4);
+                $stmt->execute();
+             }
+             $sql5 = "SELECT controlled_vocab_entry_id FROM controlled_vocab_entries WHERE controlled_vocab_id=$id;";
+             $stmt = $this->core->dbh->prepare($sql5);
+             $stmt->execute();
+             $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+             $i=0;
+             foreach($data as $d){
+                $sql5 = "INSERT INTO controlled_vocab_entry_settings(controlled_vocab_entry_id, locale, setting_name, setting_value, setting_type) 
+                VALUES ($d->controlled_vocab_entry_id,'en_US','submissionKeyword','$keyword[$i]','string');";
+                $stmt = $this->core->dbh->prepare($sql5);
+                $stmt->execute();
+                $i++;
+            }
+            
         }
         public function decline($data){
             $submission_id=$data['user_id'];
