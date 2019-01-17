@@ -23,6 +23,7 @@ $app = new \Slim\App;
 
 $app->post('/api/uploadArsip', function(Request $request, Response $response) {
    
+    //$directory ='http://localhost/jurnal/dataJurnal/journals/2/articles';
     $directory = 'C:\xampp\htdocs\jurnal\dataJurnal\journals\2\articles';
     //mkdir("hallo\hai",0777,true);
     $uploadedFiles = $request->getUploadedFiles();
