@@ -55,7 +55,7 @@
         }
 
         public function getPage($issueId){
-            $sql = "SELECT submission_id FROM published_submissions WHERE issue_id=$issueId ORDER by published_submission_id ASC";
+            $sql = "SELECT submission_id FROM published_submissions WHERE issue_id=$issueId ORDER by seq ASC";
             $stmt = $this->core->dbh->prepare($sql);            
             $stmt->execute();
             $data = $stmt->fetchAll(PDO::FETCH_OBJ);
