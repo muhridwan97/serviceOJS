@@ -35,34 +35,63 @@ class fileController{
     }
     
     public function uploadArsip($request, $response, $args) {
-        $directory = __DIR__ . '/uploads';
-
-    $uploadedFiles = $request->getUploadedFiles();
-
-    // handle single input with single file upload
-    $uploadedFile = $uploadedFiles['fileArsip'];
-    print_r($uploadedFiles);
-    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-        //$filename = $this->moveUploadedFile($directory, $uploadedFile);
-        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-        $basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
-        $filename = sprintf('%s.%0.8s', $basename, $extension);
-
-        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-        return $response->write('uploaded ' . $filename . '<br/>');
+        $submission_id=$request->getParsedBody();
+        $submission_id=$submission_id['submission_id'];
+        //print_r($submission_id);
+        $path="C:\\xampp\\htdocs\\jurnal\\dataJurnal\\journals\\2\\articles\\$submission_id\\submission\productionReady";
+         //$directory ='http://localhost/jurnal/dataJurnal/journals/2/articles';
+         //$directory =__DIR__ . '\uploads';
+         if (!file_exists($path)) {
+         mkdir($path,0777,true);
+         }
+         //mkdir("C:\\xampp\\htdocs\\jurnal\\dataJurnal\\journals\\2\\articles\\$submission_id\\submission\proof",0777,true);
+         $directory = $path;
+         $uploadedFiles = $request->getUploadedFiles();
+         
+         // handle single input with single file upload
+         $uploadedFile = $uploadedFiles['fileArsip'];
+         //print_r($uploadedFiles['fileArsip']);
+         $basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
+         //print_r($directory);
+         
+         if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+             $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+             
+             $filename = sprintf('%s.%0.8s', $basename, $extension);
+     
+             $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+             return $response->write('uploaded ' . $filename . 'berhasil <br/>');
+         }else{
+             return $response->write('gagal <br/>');
+         }
     }
+    public function uploadGalley($request, $response, $args) {
+        $submission_id=$request->getParsedBody();
+        $submission_id=$submission_id['submission_id'];
+        $path="C:\\xampp\\htdocs\\jurnal\\dataJurnal\\journals\\2\\articles\\$submission_id\\submission\proof";
+         if (!file_exists($path)) {
+         mkdir($path,0777,true);
+         }
+         $directory = $path;
+         $uploadedFiles = $request->getUploadedFiles();
+         
+         // handle single input with single file upload
+         $uploadedFile = $uploadedFiles['fileGalley'];
+         //print_r($uploadedFiles['fileArsip']);
+         $basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
+         //print_r($directory);
+         
+         if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+             $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+             
+             $filename = sprintf('%s.%0.8s', $basename, $extension);
+     
+             $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+             return $response->write('uploaded ' . $filename . 'berhasil <br/>');
+         }else{
+             return $response->write('gagal <br/>');
+         }
     }
-
-//     public function moveUploadedFile($directory, UploadedFile $uploadedFile)
-// {
-//     $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-//     $basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
-//     $filename = sprintf('%s.%0.8s', $basename, $extension);
-
-//     $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-
-//     return $filename;
-// }
 }
 
 

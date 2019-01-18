@@ -15,8 +15,9 @@ class userController{
         return $response->withJson($dataUser);
     }
     public function getUserSubmit($request, $response, $args) {
+        $editor_id = $args['editor_id']; 
         $user = new \model\userModel();
-        $dataUser = $user->getUserSubmit();
+        $dataUser = $user->getUserSubmit($editor_id);
         return $response->withJson($dataUser);
     }
     public function getUserSubmitAntrian($request, $response, $args) {

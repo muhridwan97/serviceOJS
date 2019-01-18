@@ -17,52 +17,13 @@ require 'configs/'.strtolower(APPLICATION_ENV).'.config.php';
 use Slim\Http\UploadedFile;
 
 $app = new \Slim\App;
-//untuk upload
-// $container = $app->getContainer();
-// $container['upload_directory'] = __DIR__ . '/uploads';
-
-$app->post('/api/uploadArsip', function(Request $request, Response $response) {
-   
-    //$directory ='http://localhost/jurnal/dataJurnal/journals/2/articles';
-    $directory = 'C:\xampp\htdocs\jurnal\dataJurnal\journals\2\articles';
-    //mkdir("hallo\hai",0777,true);
-    $uploadedFiles = $request->getUploadedFiles();
-    
-    // handle single input with single file upload
-    $uploadedFile = $uploadedFiles['fileArsip'];
-    print_r($uploadedFiles['fileArsip']);
-    $basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
-    print_r($uploadedFile);
-    
-    if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-        
-        $filename = sprintf('%s.%0.8s', $basename, $extension);
-
-        $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-        $response->write('uploaded ' . $filename . '<br/>');
-    }else{
-    $response->write('gagal <br/>');
-    }
-});
-
-// $app->post('/api/uploadArsip', controller\fileController::class. ':uploadArsip');
 
 
-$app->get('/api/pengguna', function ($request,$response) {
-    $data = array(
-        'nama' => 'Ridwan',
-        'umur' => 21
-    );
-    return $response->withJson($data);
-});
-$app->post('/forum', function ($request,$response,$args) {
-
-    return $args['title'];
-});
+ $app->post('/api/uploadArsip', controller\fileController::class. ':uploadArsip');
+ $app->post('/api/uploadGalley', controller\fileController::class. ':uploadGalley');
 
 $app->GET('/api/user', controller\userController::class. ':getData');
-$app->GET('/api/userSubmit', controller\userController::class. ':getUserSubmit');
+$app->GET('/api/userSubmit/{editor_id}', controller\userController::class. ':getUserSubmit');
 $app->GET('/api/userSubmitAntrian', controller\userController::class. ':getUserSubmitAntrian');
 $app->GET('/api/submission', controller\userController::class. ':getDaftarSubmission');
 $app->GET('/api/userFiles/{userId}', controller\userController::class. ':getUserFiles');
