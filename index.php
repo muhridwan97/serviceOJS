@@ -42,7 +42,7 @@ $app->post('/api/tambahPenulis', controller\userController::class. ':tambahPenul
 $app->GET('/api/publication', controller\userController::class. ':getDaftarPublication');
 $app->GET('/api/publicationIssue', controller\userController::class. ':getPublicationIssue');
 $app->GET('/api/publicationMaterial/{id}', controller\userController::class. ':getPublicationMaterial');
-$app->GET('/api/setPublication', controller\userController::class. ':setPublication');
+$app->post('/api/setPublication', controller\userController::class. ':setPublication');
 $app->get('/api/getPage/{issueId}', controller\userController::class. ':getPage');
 $app->GET('/api/getEmail/{userId}', controller\userController::class. ':getEmail');
 $app->post('/api/decline', controller\userController::class. ':decline');

@@ -330,5 +330,92 @@
             
             return $data;
         }
+        public function setPublication($data){
+            $user_id=$data['user_id'];
+            $editor_user_id=$data['editor_user_id'];
+            $date= $data['date'];
+            $issue_id=$data['issue_id'];
+            $page=$data['page'];
+            $tahun=$data['tahun'];
+            $submission_id=$this->getSubmissionId($user_id);
+            for($i=1;$i<=65;$i=$i+$i){
+            $sql = "INSERT INTO submission_search_objects(submission_id, type, assoc_id) VALUES ($submission_id,$i,0);";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            print_r($sql);
+            }
+            $sql = "SELECT first_name,middle_name,last_name FROM authors WHERE submission_id=$submission_id;";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            $nama = $stmt->fetchAll(PDO::FETCH_OBJ);
+            print_r($nama);
+            $i=0;
+            $tempKeyword=array();
+            foreach($nama as $n){
+                if($n->first_name!=""){
+                    $sql = "INSERT INTO submission_search_keyword_list(keyword_text) VALUES ('$n->first_name');";
+                    $stmt = $this->core->dbh->prepare($sql);
+                    $stmt->execute();
+                    $sql = "SELECT keyword_id FROM submission_search_keyword_list WHERE keyword_text='$n->first_name';";
+                    $stmt = $this->core->dbh->prepare($sql);
+                    $stmt->execute();
+                    $keyword_id = $stmt->fetchAll(PDO::FETCH_OBJ);
+                    $keyword_id = $keyword_id[0]->keyword_id;
+                    $tempKeyword[$i]=$keyword_id;
+                    $i++;
+                }
+                if($n->middle_name!=""){
+                    $sql = "INSERT INTO submission_search_keyword_list(keyword_text) VALUES ('$n->middle_name');";
+                    $stmt = $this->core->dbh->prepare($sql);
+                    $stmt->execute();
+                    $sql = "SELECT keyword_id FROM submission_search_keyword_list WHERE keyword_text='$n->middle_name';";
+                    $stmt = $this->core->dbh->prepare($sql);
+                    $stmt->execute();
+                    $keyword_id = $stmt->fetchAll(PDO::FETCH_OBJ);
+                    $keyword_id = $keyword_id[0]->keyword_id;
+                    $tempKeyword[$i]=$keyword_id;
+                    $i++;
+                }
+                if($n->last_name!=""){
+                    $sql = "INSERT INTO submission_search_keyword_list(keyword_text) VALUES ('$n->last_name');";
+                    $stmt = $this->core->dbh->prepare($sql);
+                    $stmt->execute();
+                    $sql = "SELECT keyword_id FROM submission_search_keyword_list WHERE keyword_text='$n->last_name';";
+                    $stmt = $this->core->dbh->prepare($sql);
+                    $stmt->execute();
+                    $keyword_id = $stmt->fetchAll(PDO::FETCH_OBJ);
+                    $keyword_id = $keyword_id[0]->keyword_id;
+                    $tempKeyword[$i]=$keyword_id;
+                    $i++;
+                }
+                
+            }
+            print_r($tempKeyword);
+            $sql = "SELECT object_id FROM submission_search_objects WHERE submission_id='$submission_id' and type=1;";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            $object_id = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $object_id = $object_id[0]->object_id;
+            for($i=0;$i< count($tempKeyword);$i++){
+                $sql = "INSERT INTO submission_search_object_keywords(object_id, keyword_id, pos) VALUES ($object_id,$tempKeyword[$i],$i);";
+                $stmt = $this->core->dbh->prepare($sql);
+                $stmt->execute();
+            }
+            $sql = "SELECT  max(seq) as seq FROM published_submissions WHERE issue_id=$issue_id;";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            $seq = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $seq = $seq[0]->seq;
+            $seq++;
+            
+            $sql = "INSERT INTO published_submissions(submission_id, issue_id, date_published, seq, access_status) VALUES ($submission_id,$issue_id,'$date',$seq,0);";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+
+            $sql = "UPDATE submissions SET status = '3', pages = '$page' WHERE submission_id = '$submission_id';";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            return $data;
+        }
     }
 ?>

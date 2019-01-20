@@ -123,6 +123,12 @@ class userController{
         $dataUserEmail = $userEmail->getEmail($submission_id);
         return $response->withJson($dataUserEmail);
     }
+    public function setPublication($request, $response, $args) {
+        $data = $request->getParsedBody();
+        $userFiles = new \model\userModel();
+        $dataUserFiles = $userFiles->setPublication($data);
+        //return $response->withJson($dataUserFiles);
+    }
 }
 
 
