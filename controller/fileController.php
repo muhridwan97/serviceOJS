@@ -37,6 +37,7 @@ class fileController{
     public function uploadArsip($request, $response, $args) {
         $body=$request->getParsedBody();
         $submission_id=$body['submission_id'];
+        $editor_id=$body['editor_id'];
         $uploadedFiles = $request->getUploadedFiles();
          
          // handle single input with single file upload
@@ -45,60 +46,88 @@ class fileController{
          $namaAsli = $uploadedFile->getClientFilename();
          $size = $uploadedFile->getSize();
          $ekstensi = $uploadedFile->getClientMediaType();
+         $date= date('Y-m-d');
+         $date = explode("-",$date);
+         $date = $date[0]."".$date[1]."".$date[2];
          //print_r($namaAsli);
-        //print_r($submission_id);
+        //print_r($date);
         $data = array(
 			'submission_id' => $submission_id,
 			'namaAsli' => $namaAsli,
             'size' => $size,
-            'ekstensi' => $ekstensi
+            'ekstensi' => $ekstensi,
+            'editor_id' => $editor_id
 			);	
         
         $userFiles = new \model\fileModel();
         $dataUserFiles = $userFiles->setFileArsip($data);
+        $file_id=$dataUserFiles[0]->file_id;
+        print_r($data);
         $path="C:\\xampp\\htdocs\\jurnal\\dataJurnal\\journals\\2\\articles\\$submission_id\\submission\productionReady";
         
          if (!file_exists($path)) {
          mkdir($path,0777,true);
          }
-         //mkdir("C:\\xampp\\htdocs\\jurnal\\dataJurnal\\journals\\2\\articles\\$submission_id\\submission\proof",0777,true);
          $directory = $path;
          
         // print_r($uploadedFiles['fileArsip']);
          
          
-        //  if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-        //      $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-             
-        //      $filename = sprintf('%s.%0.8s', $basename, $extension);
-     
-        //      $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
-        //      return $response->write('uploaded ' . $filename . 'berhasil <br/>');
-        //  }else{
-        //      return $response->write('gagal <br/>');
-        //  }
+         if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
+              $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+              $namaBaru="".$submission_id."-"."13"."-".$file_id."-"."1"."-"."11"."-".$date;
+              $filename = sprintf('%s.%0.8s', $namaBaru, $extension);
+     //print_r($filename);
+             $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+             return $response->write('uploaded ' . $filename . 'berhasil <br/>');
+         }else{
+             return $response->write('gagal <br/>');
+         }
     }
     public function uploadGalley($request, $response, $args) {
-        $submission_id=$request->getParsedBody();
-        $submission_id=$submission_id['submission_id'];
+        $body=$request->getParsedBody();
+        $submission_id=$body['submission_id'];
+        $editor_id=$body['editor_id'];
+        $uploadedFiles = $request->getUploadedFiles();
+         
+         // handle single input with single file upload
+         $uploadedFile = $uploadedFiles['fileGalley'];
+         $basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
+         $namaAsli = $uploadedFile->getClientFilename();
+         $size = $uploadedFile->getSize();
+         $ekstensi = $uploadedFile->getClientMediaType();
+         $date= date('Y-m-d');
+         $date = explode("-",$date);
+         $date = $date[0]."".$date[1]."".$date[2];
+         //print_r($namaAsli);
+        //print_r($date);
+        $data = array(
+			'submission_id' => $submission_id,
+			'namaAsli' => $namaAsli,
+            'size' => $size,
+            'ekstensi' => $ekstensi,
+            'editor_id' => $editor_id
+			);	
+        
+        $userFiles = new \model\fileModel();
+        $dataUserFiles = $userFiles->setFileGalley($data);
+        $file_id=$dataUserFiles[0]->file_id;
+        // print_r($file_id);
         $path="C:\\xampp\\htdocs\\jurnal\\dataJurnal\\journals\\2\\articles\\$submission_id\\submission\proof";
+        
          if (!file_exists($path)) {
          mkdir($path,0777,true);
          }
          $directory = $path;
-         $uploadedFiles = $request->getUploadedFiles();
          
-         // handle single input with single file upload
-         $uploadedFile = $uploadedFiles['fileGalley'];
-         //print_r($uploadedFiles['fileArsip']);
-         $basename = pathinfo($uploadedFile->getClientFilename(), PATHINFO_FILENAME);
-         //print_r($directory);
+        // print_r($uploadedFiles['fileArsip']);
+         
          
          if ($uploadedFile->getError() === UPLOAD_ERR_OK) {
-             $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-             
-             $filename = sprintf('%s.%0.8s', $basename, $extension);
-     
+              $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+              $namaBaru="".$submission_id."-"."13"."-".$file_id."-"."1"."-"."10"."-".$date;
+              $filename = sprintf('%s.%0.8s', $namaBaru, $extension);
+     //print_r($filename);
              $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
              return $response->write('uploaded ' . $filename . 'berhasil <br/>');
          }else{
