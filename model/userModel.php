@@ -417,5 +417,26 @@
             $stmt->execute();
             return $data;
         }
+        public function getTanggalSubmission(){
+            $sql = "SELECT date_submitted as date FROM submissions WHERE date_submitted is NOT null ORDER BY date_submitted asc";
+
+            $stmt = $this->core->dbh->prepare($sql);
+            
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+ 
+            return $data;
+        }
+        public function getTanggalPublication(){
+            $sql = "SELECT date_published as date FROM published_submissions ORDER BY date_published asc";
+
+            $stmt = $this->core->dbh->prepare($sql);
+            
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+ 
+            return $data;
+        }
+        
     }
 ?>

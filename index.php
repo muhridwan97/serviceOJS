@@ -46,5 +46,10 @@ $app->post('/api/setPublication', controller\userController::class. ':setPublica
 $app->get('/api/getPage/{issueId}', controller\userController::class. ':getPage');
 $app->GET('/api/getEmail/{userId}', controller\userController::class. ':getEmail');
 $app->post('/api/decline', controller\userController::class. ':decline');
+$app->GET('/api/getTanggalSubmission', controller\userController::class. ':getTanggalSubmission');
+$app->GET('/api/getTanggalPublication', controller\userController::class. ':getTanggalPublication');
+$app->GET('/api/getBulanSubmission', controller\userController::class. ':getBulanSubmission');
+$app->GET('/api/getBulanPublication', controller\userController::class. ':getBulanPublication');
+$app->GET('/api/getTotalSubPub', controller\userController::class. ':getTotalSubPub');
 $app->run();
 ?>
