@@ -84,8 +84,9 @@
             return $data;
         }
         public function getUserFiles($submission_id){
-            $sql = "select sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file,ss.setting_value as judul,
-            (SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='subtitle') as subtitle, (SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract') as abstract from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id join submission_settings ss on ss.submission_id=sf.submission_id where sf.submission_id=$submission_id and file_stage=2 and sfs.setting_name='name' and gs.locale='en_US' and ss.setting_name='cleanTitle'";
+            $sql = "select distinct sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file,(SELECT setting_value FROM submission_settings 
+            WHERE submission_id=$submission_id and setting_name='title' and locale='en_US') as judul,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='title' and locale='id_ID') as subtitle, (SELECT setting_value 
+            FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='en_US') as abstract,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='id_ID') as abstract2 from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id join submission_settings ss on ss.submission_id=sf.submission_id where sf.submission_id=$submission_id and file_stage=2 and sfs.setting_name='name' and gs.locale='en_US' and ss.setting_name='cleanTitle'";
 
             $stmt = $this->core->dbh->prepare($sql);
             
@@ -209,13 +210,15 @@
             $submission_id=$data['submission_id'];
             $judul= $data['judul'];
             $subtitle=$data['subtitle'];
-            $abstract="<p>".$data['abstract']."</p>";
+            $abstract=$data['abstract'];
+            $abstract2=$data['abstract2'];
             $keyword=$data['keyword'];
             $keyword=explode(",",$keyword);
-            $sql = "UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='Title';
-            UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='cleanTitle';
-            UPDATE submission_settings SET setting_value='$subtitle'  WHERE submission_id=$submission_id and setting_name='subtitle';
-            UPDATE submission_settings SET setting_value='$abstract'  WHERE submission_id=$submission_id and setting_name='abstract';";
+            $sql = "UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='Title' and locale='en_US';
+            UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='cleanTitle' and locale='en_US';
+            UPDATE submission_settings SET setting_value='$subtitle'  WHERE submission_id=$submission_id and setting_name='Title' and locale='id_ID';
+            UPDATE submission_settings SET setting_value='$abstract'  WHERE submission_id=$submission_id and setting_name='abstract' and locale='en_US';
+            UPDATE submission_settings SET setting_value='$abstract2'  WHERE submission_id=$submission_id and setting_name='abstract' and locale='id_ID';";
             //print_r($sql);
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
