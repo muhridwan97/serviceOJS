@@ -34,6 +34,22 @@ class userController{
         $dataUserFiles = $userFiles->getUserFiles($submission_id);
         return $response->withJson($dataUserFiles);
     }
+    public function getUserFilesPub($request, $response, $args) {
+        $userId = $args['userId']; 
+        $userFiles = new \model\userModel();
+        $submission_id=$userFiles->getSubmissionId($userId);
+        //print_r($submission_id);
+        $dataUserFiles = $userFiles->getUserFilesPub($submission_id);
+        return $response->withJson($dataUserFiles);
+    }
+    public function getUserFilesArsip($request, $response, $args) {
+        $userId = $args['userId']; 
+        $userFiles = new \model\userModel();
+        $submission_id=$userFiles->getSubmissionId($userId);
+        //print_r($submission_id);
+        $dataUserFiles = $userFiles->getUserFilesArsip($submission_id);
+        return $response->withJson($dataUserFiles);
+    }
     public function setSubmitIn($request, $response, $args) {
         $data = $request->getParsedBody();
         //print_r($data);
@@ -67,6 +83,15 @@ class userController{
         return $response->withJson($dataUserMetadata);
         
     }
+    public function getKeywordInd($request, $response, $args) {
+        $userId = $args['userId']; 
+        $userMetadata = new \model\userModel();
+        $submission_id=$userMetadata->getSubmissionId($userId);
+        
+        $dataUserMetadata = $userMetadata->getKeywordInd($submission_id);
+        return $response->withJson($dataUserMetadata);
+        
+    }
     public function getPage($request, $response, $args) {
         $issueId = $args['issueId']; 
         $userMetadata = new \model\userModel();        
@@ -96,6 +121,14 @@ class userController{
         //return $response->withJson($data);
         $userFiles = new \model\userModel();
         $dataUserFiles = $userFiles->tambahPenulis($data);
+        //return $response->withJson($dataUserFiles);
+    }
+    public function editPenulis($request, $response, $args) {
+        $data = $request->getParsedBody();
+        //print_r($data);
+        //return $response->withJson($data);
+        $userFiles = new \model\userModel();
+        $dataUserFiles = $userFiles->editPenulis($data);
         //return $response->withJson($dataUserFiles);
     }
     public function getDaftarPublication($request, $response, $args) {

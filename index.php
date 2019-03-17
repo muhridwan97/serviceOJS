@@ -27,7 +27,11 @@ $app->GET('/api/userSubmit/{editor_id}', controller\userController::class. ':get
 $app->GET('/api/userSubmitAntrian', controller\userController::class. ':getUserSubmitAntrian');
 $app->GET('/api/submission', controller\userController::class. ':getDaftarSubmission');
 $app->GET('/api/userFiles/{userId}', controller\userController::class. ':getUserFiles');
+$app->GET('/api/userFilesPub/{userId}', controller\userController::class. ':getUserFilesPub');
+$app->GET('/api/userFilesArsip/{userId}', controller\userController::class. ':getUserFilesArsip');
 $app->GET('/api/lihatFilesAsli/{fileId}', controller\fileController::class. ':getFilesAsli');
+$app->GET('/api/lihatFilesAsliPub/{fileId}', controller\fileController::class. ':getFilesAsliPub');
+$app->GET('/api/lihatFilesAsliArsip/{fileId}', controller\fileController::class. ':getFilesAsliArsip');
 
 $app->group('/api/antrian', function () use ($app) {
     $app->post('/submitIn', controller\userController::class. ':setSubmitIn');
@@ -37,8 +41,10 @@ $app->group('/api/antrian', function () use ($app) {
 $app->post('/api/verifikasi', controller\userController::class. ':setVerifikasi');
 $app->get('/api/metadata/{userId}', controller\userController::class. ':getMetadata');
 $app->get('/api/keyword/{userId}', controller\userController::class. ':getKeyword');
+$app->get('/api/keywordInd/{userId}', controller\userController::class. ':getKeywordInd');
 $app->post('/api/setMetadata', controller\userController::class. ':setMetadata');
 $app->post('/api/tambahPenulis', controller\userController::class. ':tambahPenulis');
+$app->post('/api/editPenulis', controller\userController::class. ':editPenulis');
 $app->GET('/api/publication', controller\userController::class. ':getDaftarPublication');
 $app->GET('/api/publicationIssue', controller\userController::class. ':getPublicationIssue');
 $app->GET('/api/publicationMaterial/{id}', controller\userController::class. ':getPublicationMaterial');

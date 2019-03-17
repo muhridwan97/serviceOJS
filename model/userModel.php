@@ -97,6 +97,34 @@
             }	
             return $data;
         }
+        public function getUserFilesPub($submission_id){
+            $sql = "select distinct sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file,(SELECT setting_value FROM submission_settings 
+            WHERE submission_id=$submission_id and setting_name='title' and locale='en_US') as judul,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='title' and locale='id_ID') as subtitle, (SELECT setting_value 
+            FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='en_US') as abstract,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='id_ID') as abstract2 from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id join submission_settings ss on ss.submission_id=sf.submission_id where sf.submission_id=$submission_id and sf.file_stage=10 and sfs.setting_name='name' and gs.locale='en_US' and ss.setting_name='cleanTitle'";
+
+            $stmt = $this->core->dbh->prepare($sql);
+            
+            if ($stmt->execute()) {
+                $data = $stmt->fetchAll(PDO::FETCH_OBJ);		   	
+            } else {
+                $data = 0;
+            }	
+            return $data;
+        }
+        public function getUserFilesArsip($submission_id){
+            $sql = "select distinct sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file,(SELECT setting_value FROM submission_settings 
+            WHERE submission_id=$submission_id and setting_name='title' and locale='en_US') as judul,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='title' and locale='id_ID') as subtitle, (SELECT setting_value 
+            FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='en_US') as abstract,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='id_ID') as abstract2 from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id join submission_settings ss on ss.submission_id=sf.submission_id where sf.submission_id=$submission_id and sf.file_stage=11 and sfs.setting_name='name' and gs.locale='en_US' and ss.setting_name='cleanTitle'";
+
+            $stmt = $this->core->dbh->prepare($sql);
+            
+            if ($stmt->execute()) {
+                $data = $stmt->fetchAll(PDO::FETCH_OBJ);		   	
+            } else {
+                $data = 0;
+            }	
+            return $data;
+        }
         public function setSubmitIn($data){
             
             $sql = "insert into stage_assignments (submission_id, user_group_id, user_id, date_assigned, recommend_only)VALUES 
@@ -174,7 +202,7 @@
             return $submission_id;
         }
         public function getMetadata($submission_id){
-            $sql = "SELECT submission_id,first_name,middle_name,last_name,email,seq FROM `authors` WHERE submission_id=$submission_id";
+            $sql = "SELECT submission_id,first_name,middle_name,last_name,email,seq,author_id FROM `authors` WHERE submission_id=$submission_id";
 
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
@@ -192,7 +220,31 @@
                     $id=$d->controlled_vocab_id;
             }
             $sql2 = "SELECT es.setting_value FROM controlled_vocab_entry_settings es JOIN controlled_vocab_entries ve 
-            on es.controlled_vocab_entry_id=ve.controlled_vocab_entry_id WHERE ve.controlled_vocab_id = $id;";
+            on es.controlled_vocab_entry_id=ve.controlled_vocab_entry_id WHERE ve.controlled_vocab_id = $id and es.locale='en_US';";
+            $stmt = $this->core->dbh->prepare($sql2);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $keyword=array();
+            $i=0;
+            foreach($data as $d){
+                    $keyword[$i]=$d->setting_value;
+                    $i++;
+            }
+            $kalimat = implode(",",$keyword);
+            $d->setting_value=$kalimat;
+            return $data;
+        }
+        public function getKeywordInd($submission_id){
+            $sql = "SELECT controlled_vocab_id FROM controlled_vocabs where assoc_id=$submission_id AND symbolic='submissionKeyword';";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            $id=0;
+            foreach($data as $d){
+                    $id=$d->controlled_vocab_id;
+            }
+            $sql2 = "SELECT es.setting_value FROM controlled_vocab_entry_settings es JOIN controlled_vocab_entries ve 
+            on es.controlled_vocab_entry_id=ve.controlled_vocab_entry_id WHERE ve.controlled_vocab_id = $id and es.locale='id_ID';";
             $stmt = $this->core->dbh->prepare($sql2);
             $stmt->execute();
             $data = $stmt->fetchAll(PDO::FETCH_OBJ);
@@ -214,14 +266,41 @@
             $abstract2=$data['abstract2'];
             $keyword=$data['keyword'];
             $keyword=explode(",",$keyword);
+            $keywordInd=$data['keywordInd'];
+            $keywordInd=explode(",",$keywordInd);
+            //cek udah ada id_ID dengan mereset delete trus insert
+            $sql = "DELETE FROM submission_settings WHERE submission_settings.submission_id = $submission_id AND submission_settings.locale = id_ID AND submission_settings.setting_name = 'title';
+            DELETE FROM submission_settings WHERE submission_settings.submission_id = $submission_id AND submission_settings.locale = 'id_ID' AND submission_settings.setting_name = 'subtitle';
+            DELETE FROM submission_settings WHERE submission_settings.submission_id = $submission_id AND submission_settings.locale = 'id_ID' AND submission_settings.setting_name = 'prefix';
+            DELETE FROM submission_settings WHERE submission_settings.submission_id = $submission_id AND submission_settings.locale = 'id_ID' AND submission_settings.setting_name = 'cleanTitle';
+            DELETE FROM submission_settings WHERE submission_settings.submission_id = $submission_id AND submission_settings.locale = 'id_ID' AND submission_settings.setting_name = 'abstract';";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+            $sql = "INSERT INTO submission_settings (submission_id, locale, setting_name, setting_value, setting_type) VALUES ($submission_id, 'id_ID', 'title', NULL, 'string');
+            INSERT INTO submission_settings (submission_id, locale, setting_name, setting_value, setting_type) VALUES ($submission_id, 'id_ID', 'subtitle', NULL, 'string');
+            INSERT INTO submission_settings (submission_id, locale, setting_name, setting_value, setting_type) VALUES ($submission_id, 'id_ID', 'prefix', NULL, 'string');
+            INSERT INTO submission_settings (submission_id, locale, setting_name, setting_value, setting_type) VALUES ($submission_id, 'id_ID', 'cleanTitle', NULL, 'string');
+            INSERT INTO submission_settings (submission_id, locale, setting_name, setting_value, setting_type) VALUES ($submission_id, 'id_ID', 'abstract', NULL, 'string');";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
             $sql = "UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='Title' and locale='en_US';
             UPDATE submission_settings SET setting_value='$judul'  WHERE submission_id=$submission_id and setting_name='cleanTitle' and locale='en_US';
             UPDATE submission_settings SET setting_value='$subtitle'  WHERE submission_id=$submission_id and setting_name='Title' and locale='id_ID';
+            UPDATE submission_settings SET setting_value='$subtitle'  WHERE submission_id=$submission_id and setting_name='cleanTitle' and locale='id_ID';
             UPDATE submission_settings SET setting_value='$abstract'  WHERE submission_id=$submission_id and setting_name='abstract' and locale='en_US';
             UPDATE submission_settings SET setting_value='$abstract2'  WHERE submission_id=$submission_id and setting_name='abstract' and locale='id_ID';";
             //print_r($sql);
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
+            
+            $data = $stmt->fetchAll(PDO::FETCH_OBJ);
+            if(count($data)==0){
+                $sql4 = "INSERT INTO submission_settings (controlled_vocab_id, seq) VALUES ($id,$i);";
+                $stmt = $this->core->dbh->prepare($sql4);
+                $stmt->execute();
+            }
+
+            //mencari ID
             $sql2 = "SELECT controlled_vocab_id FROM controlled_vocabs where assoc_id=$submission_id AND symbolic='submissionKeyword';";
             //print_r($sql);
             $stmt = $this->core->dbh->prepare($sql2);
@@ -244,16 +323,29 @@
                 $stmt = $this->core->dbh->prepare($sql4);
                 $stmt->execute();
              }
+             for($i=1;$i<=count($keywordInd);$i++){
+                $sql4 = "INSERT INTO controlled_vocab_entries (controlled_vocab_id, seq) VALUES ($id,$i);";
+                $stmt = $this->core->dbh->prepare($sql4);
+                $stmt->execute();
+             }
              $sql5 = "SELECT controlled_vocab_entry_id FROM controlled_vocab_entries WHERE controlled_vocab_id=$id;";
              $stmt = $this->core->dbh->prepare($sql5);
              $stmt->execute();
              $data = $stmt->fetchAll(PDO::FETCH_OBJ);
              $i=0;
              foreach($data as $d){
-                $sql5 = "INSERT INTO controlled_vocab_entry_settings(controlled_vocab_entry_id, locale, setting_name, setting_value, setting_type) 
-                VALUES ($d->controlled_vocab_entry_id,'en_US','submissionKeyword','$keyword[$i]','string');";
-                $stmt = $this->core->dbh->prepare($sql5);
-                $stmt->execute();
+                 if(count($keyword)>$i){
+                    $sql5 = "INSERT INTO controlled_vocab_entry_settings(controlled_vocab_entry_id, locale, setting_name, setting_value, setting_type) 
+                    VALUES ($d->controlled_vocab_entry_id,'en_US','submissionKeyword','$keyword[$i]','string');";
+                    $stmt = $this->core->dbh->prepare($sql5);
+                    $stmt->execute();
+                 }else{
+                     $i2=$i-count($keyword);
+                    $sql5 = "INSERT INTO controlled_vocab_entry_settings(controlled_vocab_entry_id, locale, setting_name, setting_value, setting_type) 
+                    VALUES ($d->controlled_vocab_entry_id,'id_ID','submissionKeyword','$keywordInd[$i2]','string');";
+                    $stmt = $this->core->dbh->prepare($sql5);
+                    $stmt->execute();
+                 }
                 $i++;
             }
             
@@ -290,6 +382,18 @@
             $author_id = $author_id[0]->author_id;
             $sql3="INSERT INTO author_settings(author_id, locale, setting_name, setting_value, setting_type) VALUES ($author_id,'en_US','affiliation','$affiliation','string');";
             $stmt = $this->core->dbh->prepare($sql3);
+            $stmt->execute();
+        }
+        public function editPenulis($data){
+            $author_id=$data['author_id'];
+            $first_name=$data['first_name'];
+            $last_name= $data['last_name'];
+            $middle_name=$data['middle_name'];
+            $email=$data['email'];
+            $affiliation=$data['affiliation'];
+            $sql="UPDATE authors SET first_name = '$first_name',middle_name = '$middle_name',last_name = '$last_name', email = '$email' WHERE author_id = '$author_id';
+            UPDATE author_settings SET setting_value = '$affiliation' WHERE setting_name='affiliation' and author_id = '$author_id';";
+            $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
         }
         public function getDaftarPublication(){
