@@ -98,7 +98,7 @@
             return $data;
         }
         public function getUserFilesPub($submission_id){
-            $sql = "select distinct sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file,(SELECT setting_value FROM submission_settings 
+            $sql = "select distinct sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,max(revision),file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file,(SELECT setting_value FROM submission_settings 
             WHERE submission_id=$submission_id and setting_name='title' and locale='en_US') as judul,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='title' and locale='id_ID') as subtitle, (SELECT setting_value 
             FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='en_US') as abstract,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='id_ID') as abstract2 from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id join submission_settings ss on ss.submission_id=sf.submission_id where sf.submission_id=$submission_id and sf.file_stage=10 and sfs.setting_name='name' and gs.locale='en_US' and ss.setting_name='cleanTitle'";
 
@@ -112,7 +112,7 @@
             return $data;
         }
         public function getUserFilesArsip($submission_id){
-            $sql = "select distinct sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,revision,file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file,(SELECT setting_value FROM submission_settings 
+            $sql = "select distinct sf.uploader_user_id,sf.submission_id,sf.file_id, first_name,middle_name,last_name,max(revision),file_stage,gs.genre_id,gs.setting_value as jenis_berkas,date_uploaded,sfs.setting_value as nama_file,(SELECT setting_value FROM submission_settings 
             WHERE submission_id=$submission_id and setting_name='title' and locale='en_US') as judul,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='title' and locale='id_ID') as subtitle, (SELECT setting_value 
             FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='en_US') as abstract,(SELECT setting_value FROM submission_settings WHERE submission_id=$submission_id and setting_name='abstract' and locale='id_ID') as abstract2 from users u JOIN submission_files sf ON u.user_id=sf.uploader_user_id JOIN submission_file_settings sfs ON sfs.file_id=sf.file_id JOIN genre_settings gs ON gs.genre_id=sf.genre_id join submission_settings ss on ss.submission_id=sf.submission_id where sf.submission_id=$submission_id and sf.file_stage=11 and sfs.setting_name='name' and gs.locale='en_US' and ss.setting_name='cleanTitle'";
 
@@ -393,6 +393,13 @@
             $affiliation=$data['affiliation'];
             $sql="UPDATE authors SET first_name = '$first_name',middle_name = '$middle_name',last_name = '$last_name', email = '$email' WHERE author_id = '$author_id';
             UPDATE author_settings SET setting_value = '$affiliation' WHERE setting_name='affiliation' and author_id = '$author_id';";
+            $stmt = $this->core->dbh->prepare($sql);
+            $stmt->execute();
+        }
+        public function hapusPenulis($data){
+            $author_id=$data['author_id'];
+            $sql="DELETE FROM authors WHERE authors.author_id = '$author_id';
+            DELETE FROM author_settings WHERE author_settings.author_id = '$author_id';";
             $stmt = $this->core->dbh->prepare($sql);
             $stmt->execute();
         }

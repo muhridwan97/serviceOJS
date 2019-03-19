@@ -131,6 +131,14 @@ class userController{
         $dataUserFiles = $userFiles->editPenulis($data);
         //return $response->withJson($dataUserFiles);
     }
+    public function hapusPenulis($request, $response, $args) {
+        $data = $request->getParsedBody();
+        //print_r($data);
+        //return $response->withJson($data);
+        $userFiles = new \model\userModel();
+        $dataUserFiles = $userFiles->hapusPenulis($data);
+        //return $response->withJson($dataUserFiles);
+    }
     public function getDaftarPublication($request, $response, $args) {
         $user = new \model\userModel();
         $dataUser = $user->getDaftarPublication();

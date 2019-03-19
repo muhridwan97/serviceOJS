@@ -45,6 +45,7 @@ $app->get('/api/keywordInd/{userId}', controller\userController::class. ':getKey
 $app->post('/api/setMetadata', controller\userController::class. ':setMetadata');
 $app->post('/api/tambahPenulis', controller\userController::class. ':tambahPenulis');
 $app->post('/api/editPenulis', controller\userController::class. ':editPenulis');
+$app->post('/api/hapusPenulis', controller\userController::class. ':hapusPenulis');
 $app->GET('/api/publication', controller\userController::class. ':getDaftarPublication');
 $app->GET('/api/publicationIssue', controller\userController::class. ':getPublicationIssue');
 $app->GET('/api/publicationMaterial/{id}', controller\userController::class. ':getPublicationMaterial');
