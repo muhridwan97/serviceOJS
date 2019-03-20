@@ -21,6 +21,8 @@ $app = new \Slim\App;
 
  $app->post('/api/uploadArsip', controller\fileController::class. ':uploadArsip');
  $app->post('/api/uploadGalley', controller\fileController::class. ':uploadGalley');
+ $app->post('/api/uploadGalleyEdit', controller\fileController::class. ':uploadGalleyEdit');
+ $app->post('/api/uploadArsipEdit', controller\fileController::class. ':uploadArsipEdit');
 
 $app->GET('/api/user', controller\userController::class. ':getData');
 $app->GET('/api/userSubmit/{editor_id}', controller\userController::class. ':getUserSubmit');
